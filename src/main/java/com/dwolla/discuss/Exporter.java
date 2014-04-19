@@ -45,6 +45,7 @@ public class Exporter {
         }
         
         System.out.println("Number of transactions: " + i);
+        
     }
     
 }
