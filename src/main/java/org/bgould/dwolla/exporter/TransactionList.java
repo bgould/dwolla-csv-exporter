@@ -1,4 +1,4 @@
-package com.dwolla.discuss;
+package org.bgould.dwolla.exporter;
 
 import java.io.IOException;
 import java.io.InputStream;

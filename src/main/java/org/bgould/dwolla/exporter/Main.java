@@ -1,4 +1,4 @@
-package com.dwolla.discuss;
+package org.bgould.dwolla.exporter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,7 +19,9 @@ public class Main {
             exporter.setOauthToken(optionValues.get(OAuthOption.NAME).values()[0]);
             exporter.export();
         } catch (IllegalArgumentException e) {
+            System.err.println();
             System.err.println(e.getMessage());
+            System.err.println();
             System.err.println(options.helpText());
             System.err.println();
             System.exit(1);
@@ -83,6 +85,13 @@ public class Main {
                     arguments = null;
                 }
             }
+            if (nextToken.equals(NextToken.ARGUMENT)) {
+                String[] argumentArray = arguments.toArray(new String[arguments.size()]);
+                option.validate(argumentArray);
+                result.put(option.name(), new OptionValuePair(option, argumentArray));
+                option = null;
+                arguments = null;
+            }
             return result;
         }
 
@@ -91,7 +100,7 @@ public class Main {
             buff.append("Available options include:\n")
                 .append("--------------------------\n\n");
             for (Option option : getAllowedOptions()) {
-                buff.append(option.helpText()).append("\n");
+                buff.append("    ").append(option.helpText()).append("\n");
             }
             buff.append("\n");
             return buff.toString();

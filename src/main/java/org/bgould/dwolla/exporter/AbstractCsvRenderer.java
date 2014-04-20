@@ -1,4 +1,4 @@
-package com.dwolla.discuss;
+package org.bgould.dwolla.exporter;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

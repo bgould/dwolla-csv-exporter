@@ -2,26 +2,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.dwolla.discuss</groupId>
-	<artifactId>csv-exporter</artifactId>
+	<groupId>org.bgould.dwolla</groupId>
+	<artifactId>dwolla-csv-exporter</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
 
-	<name>csv-exporter</name>
-	<url>http://maven.apache.org</url>
+	<name>dwolla-csv-exporter</name>
+	<url>http://github.com/bgould/dwolla-csv-exporter</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -32,7 +23,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.dwolla.discuss.Main</mainClass>
+							<mainClass>org.bgould.dwolla.exporter.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -1,4 +1,4 @@
-package com.dwolla.discuss;
+package org.bgould.dwolla.exporter;
 
 import java.math.BigDecimal;
 import java.util.Date;

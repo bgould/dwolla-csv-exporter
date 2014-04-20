@@ -1,4 +1,4 @@
-package com.dwolla.discuss;
+package org.bgould.dwolla.exporter;
 
 public interface Renderer<T> {
 
