@@ -114,10 +114,8 @@ public class TransactionList {
     public List<Transaction> request() throws IOException, JSONException {
         
         final String urlStr = buildUrlString();
-        System.out.println(urlStr);
         
         final String responseBody = httpGet(urlStr);
-        System.out.println(responseBody);
         
         final JSONObject jsonObj = new JSONObject(responseBody);
         boolean success = jsonObj.getBoolean("Success");
@@ -143,6 +141,7 @@ public class TransactionList {
             transaction.setAmount(          parseBigDecimal(    jsonTxn, "Amount", 2)           );
             transaction.setType(TransactionType.valueOf(jsonTxn.getString("Type").toUpperCase())    );
             transaction.setStatus(Status.valueOf(jsonTxn.getString("Status").toUpperCase()));
+            transaction.setOriginalTransactionId(parseJsonString(jsonTxn, "originalTransactionId"));
             results.add(transaction);
         }
         return results;

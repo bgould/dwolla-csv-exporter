@@ -3,26 +3,22 @@ package com.dwolla.discuss;
 import java.util.Date;
 import java.util.List;
 
-public class Exporter {
+public class TransactionListExporter {
 
     private String oauthToken;
     
-    private int pageSize = 33;
+    private int pageSize = 100;
     
-    private Renderer renderer;
+    private Renderer<Transaction> renderer = new TransactionListCsvRenderer();
     
-    public static void main(String... args) throws Exception {
-        final Exporter exporter = new Exporter();
-        exporter.oauthToken = args[0];
-        exporter.export();
+    public void setOauthToken(String token) {
+        this.oauthToken = token;
     }
     
-    public void export() throws Exception {
-        
+    public void export() {
         if (renderer != null) {
             renderer.begin();
         }
-        
         final TransactionList transactionList = new TransactionList(oauthToken);
         transactionList.setSinceDate(new Date(0));
         transactionList.setEndDate(new Date());
@@ -30,7 +26,13 @@ public class Exporter {
         List<Transaction> transactions = null;
         int i = 0;
         do {
-            transactions = transactionList.request();
+            try {
+                transactions = transactionList.request();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             transactionList.setSkip(transactionList.getSkip() + pageSize);
             for (Transaction transaction : transactions) {
                 if (renderer != null) {
@@ -39,13 +41,10 @@ public class Exporter {
                 i++;
             }
         } while (transactions.size() >= pageSize);
-        
         if (renderer != null) {
             renderer.end();
         }
-        
-        System.out.println("Number of transactions: " + i);
-        
+        System.err.println("Number of transactions: " + i);
     }
     
 }

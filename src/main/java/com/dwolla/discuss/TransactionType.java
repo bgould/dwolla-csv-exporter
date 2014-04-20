@@ -9,4 +9,9 @@ public enum TransactionType {
     FEE,
     ;
 
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+    
 }

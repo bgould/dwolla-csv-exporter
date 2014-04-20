@@ -9,4 +9,9 @@ public enum Status {
     RECLAIMED,
     ;
 
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+    
 }

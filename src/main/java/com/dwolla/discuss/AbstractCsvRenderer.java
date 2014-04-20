@@ -1,11 +1,17 @@
 package com.dwolla.discuss;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractCsvRenderer<T> implements Renderer {
+public abstract class AbstractCsvRenderer<T> implements Renderer<T> {
 
     private final PrintWriter out;
 
@@ -83,6 +89,7 @@ public abstract class AbstractCsvRenderer<T> implements Renderer {
                 first = false;
             }
             out.println();
+            out.flush();
         }
     }
 
@@ -96,11 +103,13 @@ public abstract class AbstractCsvRenderer<T> implements Renderer {
             first = false;
         }
         out.println();
+        out.flush();
     }
 
     public void end() {
         if (newlineAtEnd) {
             out.println();
+            out.flush();
         }
     }
     
@@ -109,6 +118,9 @@ public abstract class AbstractCsvRenderer<T> implements Renderer {
     }
     
     protected String escape(String value) {
+        if (value == null) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         boolean useQuotes = quoteAllValues;
         useQuotes |= value.indexOf(separator) > -1;
@@ -138,9 +150,36 @@ public abstract class AbstractCsvRenderer<T> implements Renderer {
         
         private final Class<C> type;
         
+        private final Method getter;
+        
         public Column(String _name, Class<C> _type) {
             this.name = _name;
             this.type = _type;
+            try {
+                Method _getter = null;
+                BeanInfo beanInfo = Introspector.getBeanInfo(AbstractCsvRenderer.this.getRowType());
+                for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+                    if (descriptor.getName().equals(name)) {
+                        if (descriptor.getReadMethod() != null) {
+                            _getter = descriptor.getReadMethod();
+                            break;
+                        } else {
+                            throw new IllegalStateException(
+                                "property `" + this.getName() + "` is not readable");
+                        }
+                    }
+                }
+                if (_getter == null) {
+                    throw new IllegalArgumentException(
+                        _type + " does not have a property `" + 
+                        this.getName() + "`"
+                    );
+                } else {
+                    this.getter = _getter;
+                }
+            } catch (IntrospectionException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         public String getName() {
@@ -151,8 +190,25 @@ public abstract class AbstractCsvRenderer<T> implements Renderer {
             return this.type;
         }
         
+        public C value(T obj) {
+            try {
+                @SuppressWarnings("unchecked")
+                C value = (C) this.getter.invoke(obj);
+                return value;
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        }
+        
         public String render(T obj) {
-            return "TEST";
+            C value = value(obj);
+            if (value != null) {
+                return escape(value.toString());
+            } else {
+                return "";
+            }
         }
         
         public AbstractCsvRenderer<T> getRenderer() {
